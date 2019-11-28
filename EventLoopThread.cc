@@ -2,6 +2,7 @@
 #include"MutexLock.h"
 #include"MutexLockGrard.h"
 #include"EventLoop.h"
+#include<glog/logging.h>
 void* threadFunc(void * arg)
 {
     EventLoop *thisLoop;
@@ -15,7 +16,7 @@ void* threadFunc(void * arg)
     }
     
     thread->loop();
-    std::cout<<"EventLoop :"<<thisLoop<<" exited\n";
+    LOG(INFO)<<"EventLoop :"<<thisLoop<<" exited\n";
     //IOloop=new EventLoop();
 }
 EventLoopThread::EventLoopThread(/* args */)
@@ -31,7 +32,7 @@ EventLoop* EventLoopThread::startLoop()
 {
    
     if(pthread_create(&(this->currentThread),NULL,threadFunc,this)!=0)
-        perror("thread creat\n");
+        LOG(ERROR)<<"thread creat\n";
     IOloop =NULL;
     {
          MutexLockGrard LOCK(*mutex_);

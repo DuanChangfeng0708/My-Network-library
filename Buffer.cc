@@ -3,6 +3,7 @@
 #include<stdio.h>
 #include<iostream>
 #include<sys/uio.h>
+#include<glog/logging.h>
 Buffer::Buffer()
 :readIndex(kPrependable),
 writeIndex(kPrependable)
@@ -95,7 +96,7 @@ int Buffer::readFd(int fd)
     int nread=readv(fd,ev,EvCount);
     if(nread<0)
     {
-        perror("readv\n");
+        LOG(FATAL)<<"readv\n";
     }
     else if(nread<getWriteableSize())
     {

@@ -1,7 +1,7 @@
 CXX = g++
 TARGET = testTcpserver
-C_FLAGS += -g
-LIB_FLAGS = -pthread
+C_FLAGS += -g 
+LIB_FLAGS = -lglog -pthread
 
 vpath %.cc ../
 vpath %.h ../

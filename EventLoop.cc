@@ -6,6 +6,7 @@
 #include<sys/eventfd.h>
 #include<functional>
 #include<errno.h>
+#include<glog/logging.h>
 
 EventLoop::EventLoop()
     :looping_(false),
@@ -16,7 +17,7 @@ EventLoop::EventLoop()
     WeakUpChannel_(new Channel(WeakUpFd_,this)),
     mutex_(new MutexLock())
 {
-    std::cout<<"EventLoop: "<<this<<" be created in "<<threadId_<<" thread"<<std::endl;
+    LOG(INFO)<<"EventLoop: "<<this<<" be created in "<<threadId_<<" thread\n";
     WeakUpChannel_->setReadCallBack(
         std::bind(&EventLoop::handleWeadupFdEvent,this)
     );
@@ -76,7 +77,7 @@ void EventLoop::weakUp()
     int writelen =::write(WeakUpFd_,&WeakMessage, sizeof WeakMessage);
     if(writelen<0)
     {
-        perror("weakUp write\n");
+       LOG(ERROR)<<"weakUp write\n";
     }
 }
 
@@ -101,7 +102,7 @@ int EventLoop::CreatEventFd()
     int evtfd = ::eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
     if (evtfd < 0)
     {
-        std::cout << "Failed in eventfd"<<std::endl;
+        LOG(ERROR)<< "Failed in eventfd"<<std::endl;
         abort();
     }
     return evtfd;
@@ -118,7 +119,7 @@ void EventLoop::handleWeadupFdEvent()
     int64_t one;
     int nrd=::read(WeakUpFd_,&one,sizeof one);
     if(nrd<0)
-        std::cout<<"error in EventLoop::handleWeadupFdEvent()"<<std::endl;
+        LOG(ERROR)<<"error in EventLoop::handleWeadupFdEvent()\n";
     
     
     

@@ -2,6 +2,7 @@
 #include"./Channel.h"
 #include"./EventLoop.h"
 #include<poll.h>
+#include<glog/logging.h>
 const int Channel::KNoneEvent = 0;
 const int Channel::KReadEvent = POLLIN | POLLPRI;
 const int Channel::KWriteEvent = POLLOUT;
@@ -17,7 +18,7 @@ Channel::Channel(int fd,EventLoop *loop)
 void Channel::handleEvent()
 {
     if(revents_&POLLNVAL)
-        std::cout<<"fd is illegal";
+        LOG(ERROR)<<"fd is illegal";
     if(revents_&(POLLIN|POLLPRI|POLLRDHUP))
         if(readCallback_)readCallback_();
     if(revents_&(POLLOUT))
@@ -38,7 +39,7 @@ Channel::~Channel()
 {
     close(fd_);
     //把自己unregister
-    std::cout<<"~channel() fd="<<fd_<<"\n" ; 
+    LOG(INFO)<<"~channel() fd="<<fd_<<"\n" ; 
 }
 void Channel::update()
 {

@@ -3,6 +3,7 @@
 #include"EventLoop.h"
 #include"InetAddr.h"
 #include"Buffer.h"
+#include<glog/logging.h>
 
 TcpConnection::TcpConnection(const std::string name,EventLoop *loop,const InetAddr *thisAddr,const InetAddr *peerAddr)
     :name_(name),
@@ -13,14 +14,9 @@ TcpConnection::TcpConnection(const std::string name,EventLoop *loop,const InetAd
     inputBuffer_(new Buffer()),
     outputBuffer_(new Buffer())
 {
-    std::cout<<"TcpConnection\n";
     clientChannel_.reset(new Channel(peerAddr->Fd_,loop_));
     clientChannel_->setReadCallBack(std::bind(&TcpConnection::handleRead,this));
     clientChannel_->setWriteCallBack(std::bind(&TcpConnection::handleWrite,this));
-    std::cout<<inputBuffer_->getReadableSize()<<"----------\n";
-    std::cout<<inputBuffer_->getWriteableSize()<<"-***********\n";
-    std::cout<<outputBuffer_->getReadableSize()<<"----------\n";
-    std::cout<<outputBuffer_->getWriteableSize()<<"-***********\n";
 }
 
 void TcpConnection::handleRead()
@@ -40,7 +36,6 @@ void TcpConnection::handleRead()
 }
 TcpConnection::~TcpConnection(){
     loop_->quit();
-    std::cout<<"~TcpConnection()\n";
 };
 void TcpConnection::ConnetEstablished()
 {
@@ -59,7 +54,7 @@ void TcpConnection::handleClose()
 }
 void TcpConnection::handleError()
 {
-    std::cout<<"handleError\n";
+    LOG(ERROR)<<"handleError\n";
 }
 void TcpConnection::UnregisterChannel()
 {
@@ -88,7 +83,7 @@ void TcpConnection::sendInLoop(const std::string &message)
     outputBuffer_->append(message);
     int writenLen=::write(peerAddr_->Fd_,message.c_str(),message.size());
     if(writenLen<0)
-        std::cout<<"write error\n";
+        LOG(ERROR)<<"write error\n";
     else if(writenLen<message.size())   //由于某种原因没有发送完
     {
         std::string buf(message.c_str()+writenLen);

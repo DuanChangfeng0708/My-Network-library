@@ -2,7 +2,7 @@
 #include"InetAddr.h"
 #include"Channel.h"
 #include"EventLoop.h"
-
+#include<glog/logging.h>
 Acceptor::Acceptor(EventLoop *loop,InetAddr *addr)
 :loop_(loop),
 linstenFd_(addr->Fd_),
@@ -13,7 +13,7 @@ islistenning_(false)
     setsockopt(linstenFd_, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
     const struct sockaddr *serverAddr=addr->getSockaddr();
     if(::bind(linstenFd_,serverAddr,sizeof(*serverAddr))<0)
-        perror("bind(3)\n");
+        LOG(FATAL)<<"bind(3)\n";
     loop_->assertinLoopThread();
     loop_->updateChannel(linstenChannel_);
     linstenChannel_->setReadCallBack(std::bind(
@@ -29,7 +29,7 @@ void Acceptor::Listen()
     loop_->assertinLoopThread();
     islistenning_=true;
     if(::listen(linstenFd_,10))
-        perror("lisnten(2)\n");
+        LOG(FATAL)<<"lisnten(2)\n";
     linstenChannel_->enabelReading();
     loop_->setLoopState(true);
 
@@ -44,7 +44,7 @@ void Acceptor::handleRead()
         socklen_t clientAddrLen;
         int connfd=::accept(linstenFd_,(struct sockaddr *)&clientaddr,&clientAddrLen);
         int connprot=ntohs( clientaddr.sin_port);
-        std::cout<<"port: "<<connprot<<std::endl;
+        LOG(INFO)<<"port: "<<connprot<<std::endl;
         InetAddr* CAddr=new InetAddr(connprot,connfd);
         if(connfd>0)
             if(newConnetionCallback_)

@@ -4,6 +4,7 @@
 #include"../TcpConnection.h"
 #include"../Callback1.h"
 #include"../Buffer.h"
+#include<glog/logging.h>
 class testTcpServer
 {
 private:
@@ -45,11 +46,19 @@ public:
 
 
 
-int main()
+int main(int argc,char *argv[])
 {
+    google::InitGoogleLogging(argv[0]);
+    FLAGS_alsologtostderr=true;
+    FLAGS_colorlogtostderr=true;
+    FLAGS_log_dir="./";
+    FLAGS_max_log_size=1024;
+    FLAGS_logbufsecs=0;
     EventLoop loop;
     InetAddr addr(9900);  
     testTcpServer server(&loop,&addr);
     
     loop.loop(); 
+    google::ShutdownGoogleLogging();
+    sleep(2);
 }

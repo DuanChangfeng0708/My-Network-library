@@ -2,7 +2,7 @@
 #include"./Channel.h"
 #include"./EventLoop.h"
 #include<poll.h>
-
+#include<glog/logging.h>
 Poller::Poller(EventLoop *loop)
 :loop_(loop)
 {
@@ -16,7 +16,7 @@ void Poller::poll(ActivityChannels *activityChannels)
     }
     else if(nEvents<0)
     {
-         std::cout<<"error in Poller::poll"<<std::endl;
+         LOG(ERROR)<<"error in Poller::poll"<<std::endl;
     }
     
 }

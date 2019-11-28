@@ -1,6 +1,6 @@
 #include"InetAddr.h"
 #include"iostream"
-
+#include<glog/logging.h>
 InetAddr::InetAddr(int port,int fd)
     :Port_(port)
 {
@@ -9,7 +9,7 @@ InetAddr::InetAddr(int port,int fd)
     else
         Fd_=fd;
     if(Fd_<0)
-        perror("socket(3)\n");
+        LOG(FATAL)<<"socket(3)\n";
     bzero(&inetAddr,sizeof inetAddr);
     inetAddr.sin_port=htons(Port_);
     inetAddr.sin_family=AF_INET;

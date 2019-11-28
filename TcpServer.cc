@@ -7,7 +7,7 @@
 #include<arpa/inet.h>
 #include"./EventLoopThread.h"
 #include"./EventLoopThreadPool.h"
-
+#include<glog/logging.h>
 TcpServer::TcpServer(EventLoop *loop,InetAddr* port)
     :loop_(loop),
     port_(port),
@@ -25,7 +25,7 @@ void TcpServer::NewConnection(const InetAddr *clientaddr)
 {
     char str[INET_ADDRSTRLEN];
     const struct sockaddr_in* client=(const struct sockaddr_in *)clientaddr->getSockaddr();
-    std::cout<<"client : "<<inet_ntop(AF_INET,&(client->sin_addr.s_addr),str,sizeof str)<<" \n";
+    LOG(INFO)<<"client : "<<inet_ntop(AF_INET,&(client->sin_addr.s_addr),str,sizeof str)<<" \n";
     char buf[32];
     snprintf(buf,sizeof buf,"#%d",clientaddr->Fd_);
     std::string ClientName_= name_ + buf;
@@ -51,7 +51,7 @@ void TcpServer::NewConnection(const InetAddr *clientaddr)
 }
 void TcpServer::start(int MinThreadSize)
 {
-    std::cout<<"Tcpserver start "<<std::endl;
+    LOG(INFO)<<"Tcpserver start "<<std::endl;
     ::bind(port_->Fd_,port_->getSockaddr(),sizeof(port_->getSockaddr()));
    
     if(MinThreadSize!=0)
