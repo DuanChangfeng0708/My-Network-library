@@ -26,13 +26,11 @@ void Buffer::append(const void *date,int len)
 {
     const char *date2=(const  char *)date;
     if(len>getWriteableSize())
-        EnlargeDate(len);
-    else
     {
-        std::copy(date2,date2+len,
-        getWriteHead());
-        writeIndex+=len;
+        EnlargeDate(len);
     }
+    std::copy(date2,date2+len,getWriteHead());
+    writeIndex+=len;
     
 }
 void Buffer::append(const std::string date)
@@ -90,7 +88,7 @@ int Buffer::readFd(int fd)
     ev[0].iov_base=&*(date_.begin())+writeIndex;
     ev[0].iov_len=getWriteableSize();
     ev[1].iov_base=buf;
-    ev[1].iov_len=65565;
+    ev[1].iov_len=65535;
 
     int EvCount=getWriteableSize()>sizeof buf?1:2;
     int nread=readv(fd,ev,EvCount);
@@ -106,7 +104,7 @@ int Buffer::readFd(int fd)
     {
         int restDate=nread-getWriteableSize();
         writeIndex=date_.size();
-        append(buf,nread-restDate);
+        append(buf,restDate);
     }
     return nread;
 }
