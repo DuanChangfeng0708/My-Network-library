@@ -1,16 +1,16 @@
 CXX = g++
-TARGET = testTcpserver
+TARGET = EchoServer
 C_FLAGS += -g 
 LIB_FLAGS = -lglog -pthread
 
-vpath %.cc ../
-vpath %.h ../
+vpath %.cc ../../
+vpath %.h ../../
 
-Src = MutexLock.o MutexLockGrard.o testTcpServer.o Channel.o EventLoop.o Poller.o \
+Src = MutexLock.o MutexLockGrard.o EchoServer.o Channel.o EventLoop.o Poller.o \
 TcpServer.o Acceptor.o InetAddr.o TcpConnection.o EventLoopThread.o EventLoopThreadPool.o Buffer.o
 # 注释
 all: $(TARGET)
-testTcpserver: $(Src)
+EchoServer: $(Src)
 	$(CXX) $(C_FLAGS) -o $@ $^ $(LIB_FLAGS) 
 
 #MutexLockGrard.o:MutexLockGrard.h MutexLockGrard.cc

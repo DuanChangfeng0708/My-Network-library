@@ -1,11 +1,12 @@
-#include"../TcpServer.h"
-#include"../EventLoop.h"
-#include"../InetAddr.h"
-#include"../TcpConnection.h"
-#include"../Callback1.h"
-#include"../Buffer.h"
+#include"../../TcpServer.h"
+#include"../../EventLoop.h"
+#include"../../InetAddr.h"
+#include"../../TcpConnection.h"
+#include"../../Callback1.h"
+#include"../../Buffer.h"
 #include<glog/logging.h>
-class testTcpServer
+
+class EchoServer
 {
 private:
     /* data */
@@ -14,26 +15,26 @@ private:
     TcpServer *server_;
     
 public:
-    testTcpServer(EventLoop *loop,InetAddr *addr)
+    EchoServer(EventLoop *loop,InetAddr *addr)
     :loop_(loop),
     addr_(addr),
     server_(new TcpServer(loop_,addr_))
     {
         server_->setMessageCallback(
             std::bind(
-                &testTcpServer::testread,
+                &EchoServer::testread,
                 this,
                 std::placeholders::_1
                 ,std::placeholders::_2));
-        server_->setConnectionCallback(std::bind(&testTcpServer::ConnetionCallback,this,std::placeholders::_1));
+        server_->setConnectionCallback(std::bind(&EchoServer::ConnetionCallback,this,std::placeholders::_1));
         server_->start(3);
     }
-    void testread(const TcpConnectionPtr conn, Buffer str)
+    void testread(const TcpConnectionPtr& conn, Buffer& str)
     {
         std::cout<<str.retrieveAllAsString()<<"\n";
         conn.get()->send(str.retrieveAllAsString());
     }
-    void ConnetionCallback(TcpConnectionPtr conn)
+    void ConnetionCallback(const TcpConnectionPtr& conn)
     {
        conn.get()->send("hello client\n");
     }
@@ -49,14 +50,14 @@ public:
 int main(int argc,char *argv[])
 {
     google::InitGoogleLogging(argv[0]);
-    FLAGS_alsologtostderr=true;
+    FLAGS_alsologtostderr=false;
     FLAGS_colorlogtostderr=true;
     FLAGS_log_dir="./";
     FLAGS_max_log_size=1024;
     FLAGS_logbufsecs=0;
     EventLoop loop;
     InetAddr addr(9900);  
-    testTcpServer server(&loop,&addr);
+    EchoServer server(&loop,&addr);
     
     loop.loop(); 
     google::ShutdownGoogleLogging();
